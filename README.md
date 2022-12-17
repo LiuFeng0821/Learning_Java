@@ -1,2 +1,2 @@
 # Learning_Java
-用于记录Java的学习。
+  我的第一本Java入门书籍是《第一行代码Java》
