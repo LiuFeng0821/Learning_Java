@@ -150,3 +150,95 @@ public class TestDemo {
     }
 }
 ```
+
+注意：
+* 枚举中定义的**构造方法不能使用public声明**，如果**没有无参构造**，要**手工调用构造传递函数**。
+* **枚举对象**必须要放在**首行**，随后才可以定义属性、构造、普通方法等结构。
+```java
+enum Sex {
+    MALE("男"),FEMALE("女");
+    private String title;
+    private Sex(String title) {
+        this.title = title;
+    }
+    public String toString() {
+        return this.title;
+    }
+}
+```
+
+请解释一下**enum**和**Enum**的关系：
+**enum**时JDK1.5之后定义的新**关键字**，主要**用于定义枚举类型**，在Java中每一个使用**enum定义的枚举类型**实际上都表示一个类**默认继承了Enum类**。
+
+## 8.6 Annotation
+在Java SE为了方便用户编写代码，提供了三种最常用的基础注解定义：
+1. **准确的覆写：@Override**
+2. **声明过期操作：@Deprecated**
+3. **压制警告：@SuppressWarnings**
+
+## 8.7 接口定义加强
+从**JDK1.8**开始，可以在**接口**中定义**普通方法（使用default声明）**与**静态方法（使用static声明）**。
+
+## 8.8 Lambda表达式
+Lambda表达式有如下几种形式：
+1. 方法主体为一个表达式：`(params) -> expression;`
+2. 方法主体为一行执行代码：`(params) -> statements;`
+3. 方法主体需要编写多行代码：`(params) -> {statements}`
+
+例子：
+```java
+interface IMessage {
+    public int add(int x,int y);
+}
+public class TestDemo {
+    public static void main(String args[]) {
+        fun((s1,s2) -> {
+            return s1 + s2;
+        });
+    }
+    public void fun(IMessage msg) {
+        System.out.println(msg.add(10,20));
+    }
+}
+```
+
+## 8.9 方法引用
+对于方法引用，Java 8一共定义了以下四种操作形式：
+* 引用静态方法：`类名称 :: static 方法名称;`
+* 引用某个对象的方法：`实例化对象 :: 普通方法;`
+* 引用特定类型的方法：`特定类 :: 普通方法;`
+* 引用构造方法：`类名称 :: new`
+
+## 8.10 内建函数式接口
+在JDK1.8之后提供了一个新的开发包：**java.util.Function**，在这个包中提供了**4个核心的函数式接口**。
+1. **功能型接口（Function)：接收一个参数，并且返回一个处理结果。**
+```java
+@FunctionalInterface
+public interface Function<T,R> {
+    public R apply(T t);
+}
+```
+
+2. **消费型接口（Consumer）：接收数据，不返回处理结果。**
+
+```java
+@FunctionalInterface
+public interface Consumer<T> {
+    public void accept(T t);
+}
+```
+3. **供给型接口（Supplier）：不接受参数，可以返回结果。**
+
+```java
+public interface Supplier<T> {
+    public T get();
+}
+```
+4. **断言型接口（Predicate）：进行判断操作使用。**
+
+```java
+@FunctionalInterface
+public interface Predicate<T> {
+    public boolean test(T t);
+}
+```
