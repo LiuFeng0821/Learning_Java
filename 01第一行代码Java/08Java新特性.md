@@ -212,6 +212,7 @@ public class TestDemo {
 ## 8.10 内建函数式接口
 在JDK1.8之后提供了一个新的开发包：**java.util.Function**，在这个包中提供了**4个核心的函数式接口**。
 1. **功能型接口（Function)：接收一个参数，并且返回一个处理结果。**
+
 ```java
 @FunctionalInterface
 public interface Function<T,R> {
@@ -219,7 +220,7 @@ public interface Function<T,R> {
 }
 ```
 
-2. **消费型接口（Consumer）：接收数据，不返回处理结果。**
+2. **消费型接口（Consumer）：接收数据，不处理结果。**
 
 ```java
 @FunctionalInterface
@@ -227,6 +228,7 @@ public interface Consumer<T> {
     public void accept(T t);
 }
 ```
+
 3. **供给型接口（Supplier）：不接受参数，可以返回结果。**
 
 ```java
@@ -234,6 +236,7 @@ public interface Supplier<T> {
     public T get();
 }
 ```
+
 4. **断言型接口（Predicate）：进行判断操作使用。**
 
 ```java
