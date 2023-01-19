@@ -17,7 +17,7 @@ String类对象和StringBuffer类对象的相互转换：
 StringBuffer类中常用的操作方法：
 1. **数据追加**：`public StringBuffer append(数据类型 变量)`
 2. **字符串反转**：`public StringBuffer reverse()`
-3. 在**指定位置追加内容**：`public StringBuffer insert(int offset,数据类型 变量)`
+3. **在指定位置追加内容**：`public StringBuffer insert(int offset,数据类型 变量)`
 4. **删除指定索引范围的内容**：`public StringBuffer delete(int start,int end)`
 
 * Java中除了StringBuffer类还有StringBulider类，这两个类可以说基本上是一模一样，只不过**StringBuffer类中的方法**全部使用“**synchronized**”定义，属于**同步操作**，**线程安全**，而**StringBulider类中的方法**都属于**异步方法**，属于**非线程安全**的操作。
@@ -134,3 +134,262 @@ public class TestDemo{
 	}
 }
 ```
+
+**java.util.Calendar抽象类**可以分别**取得日期时间数字**，进行各种日期时间的计算操作，有关常量及方法如下：
+1. **取得年**：`public static final int YEAR`
+2. **取得月（索引从0开始）**：`public static final int MONTH`
+3. **取得日**：`public static final int DAY_OF_MONTH`
+4. **取得小时**：`public static final int HOUR_OF_DAY`
+5. **取得分**：`public static final int MINUTE`
+6. **取得秒**：`public static final int SECOND`
+7. **取得毫秒**：`public static final int MILLISECOND`
+8. **根据默认的时区实例化对象**：`public static Calendar getInstance()`
+9. **判断一个日期是否在指定日期之后**：`public boolean after(Object when)`
+10. **判断一个日期是否在指定日期之前**：`public boolean before(Object when)`
+11. **返回给定日历字段的值**：`public int get(int field)`
+
+## 10.7 比较器
+**java.util.Arrays类**定义了与所有**数组有关的基本操作**：二分查找，相等判断，数组填充，有关的方法如下：
+1. **判断两个数组是否相等**：`public static boolean equals(int[] a,int[] a2)`
+2. **将指定内容填充到数组中（数组中元素全部变成指定内容）**：`public static void fill(int[] a,int val)`
+3. **数组排序**：`public static void sort(Object[] a)`
+4. **对排序后的数组进行检索（数组必须排序后才能使用该方法）**：`public static int binarySearch(int[] a,int key)`
+5. **输出数组信息**：`public static String toString(Object[] o)`
+
+**java.lang.Comparable接口**定义如下：
+```java
+public interface Comparable<T>{
+    public int compareTo(T o);
+}
+```
+
+* 在**Comparable接口**中只定义了一个**compareTo()方法**，此方法**只返回一个int型数据**，用户**覆写时**只需要**返回三个结果**：1（大于）、0（等于）、-1（小于）。
+```java
+import java.util.Arrays;
+class Book implements Comparable<Book>{
+	private String title;
+	private double price;
+	public Book(String title,double price){
+		this.title = title;
+		this.price = price;
+	}
+	public String toString(){
+		return "图书名称：" + this.title + "\t图书价格：" + this.price + "\t";
+	}
+	@Override
+	public int compareTo(Book o){
+		if (this.price > o.price){
+			return 1;
+		} else if (this.price == o.price){
+			return 0;
+		} else {
+			return -1;
+		}
+	}
+}
+public class TestDemo{
+	public static void main(String args[]){
+		Book books[] = new Book[]{
+			new Book("Javak开发",79.8),
+			new Book("JAVA WEB开发",69.8),
+			new Book("Oracle开发",99.8),
+			new Book("Android开发",89.8)
+		};
+		Arrays.sort(books);
+		System.out.println(Arrays.toString(books));
+	}
+}
+```
+
+如果在类的设计之初没有实现Comparable接口，而且不想修改类的原始定义，则可以使用**java.util.Comparator接口（挽救比较器）**：
+```java
+public interface Comparator<T>{
+    public int compare(T o1,T o2);
+    public boolean equals(Object obj);
+}
+```
+
+*如果利用**Comparator接口实现对象数组的排序操作**，需要**更换java.util.Arrays类中的排序方法**,使用新的排序方法：`public static <T> void sort(T[] a,Comparator<? super T> c)`
+
+## 10.8 正则表达式
+正则表达式（Regular Expression）规则：
+1. 单个字符（数量1）
+* 单个字符：`任意一个字符`
+* 转义字符“\”：`\\`
+* 制表符：`\t`
+* 换行符：`\n`
+* 点：`\.`
+* 斜杠：`\\\`
+2. 字符集（数量1）
+* a,b,c中任意一个字符：`[abc]`
+* 不是a，b，c中任意一个字符：`[^abc]`
+* 任意一个小写字母：`[a-z]`
+* 任意一个字母（不区分大小写）：`[a-zA-Z]`
+* 任意一个数字：`[0-9]`
+* 任意一个字母，数字，下划线：`[a-zA-Z_0-9]`
+* 任意一个字符：`.`
+3. 边界匹配（不要在Java中使用）
+* 正则开始：`^`
+* 正则结束：`$`
+4. 数量表达式
+* 0个或多个：`*`
+* 1个或多个：`+`
+* 0个或1个：`?`
+* 刚好出现n次：`{n}`
+* 大于等于n次：`{n,}`
+* 大于等于n次且小于等于m次：`{n,m}`
+5. 逻辑运算
+* 设为一组：`()`
+* 或者（满足其一即可）：`|`
+
+**String类中方法参数为“regex”的都可以使用正则表达式**：
+* 正则验证，使用指定字符串判断是否符合正则表达式结构：`public boolean matches(String regex)`
+* 将满足正则标记的内容全部替换为新的内容：`public String replaceAll(String regex,String replacement)`
+* 将满足正则标记的首个内容替换为新的内容：`public String replaceFirst(String regex,String replacement)`
+* 按照指定的正则标记进行字符串的全部拆分：`public String[] split(String regex)`
+* 按照指定的正则标记进行字符串的部分拆分：`public String[] split(String regex,int limit)`
+
+**java.util.regex包**中提供了**Pattern**与**Matcher**类可以实现正则表达式的操作。
+
+**java.util.regex.Pattern类**主要功能是进行**数据拆分**以及为**Matcher类对象实例化**，常用方法如下：
+1. 编译正则表达式：`public static Pattern compile(String regex)`
+2. 数据全部拆分：`public String[] split(CharSequence input)`
+3. 数据部分拆分：`public String[] split(CharSequence input,int limit)`
+4. 取得Matcher类对象：`public String[] Matcher(CharSequence input)`
+
+**java.util.regex.Matcher类**主要功能是进行**数据的验证与替换**，常用方法如下：
+1. 正则匹配：`public boolean matches()`
+2. 全部替换：`public String replaceAll(String replacement)`
+3. 替换首个：`public String replaceFirst(String replacement)`
+
+## 10.9 反射机制
+* 如果要通过实例化对象找到对象所在的类信息，可以通过Object类中的getClass()方法：`public final Class<?> getClass()`
+
+**java.lang.Class类是反射操作的源头**，所有的反射操作都需要通过此类开始，此类有三种实例化方式：
+1. **调用Object类中的getClass()方法**，调用此方法必须要有实例化对象。
+2. **使用“类.class”取得**，这种情况可以不需要通过指定类的实例化对象取得。
+3. **调用Class类中提供的方法**：`public static Class<?> forName(String className) throws ClassNotFoundException`
+
+Class类中提供了如下的常用方法：
+1. 通过字符串设置的类名称实例化Class对象：`public static Class<?> forName(String className) throws ClassNotFoundException`
+2. 取得类实现的所有接口：`public Class<?> [] getInterfaces()`
+3. 取得反射操作类的全名：`public String getName()`
+4. 取得反射操作类名，不包括包名称：`public String getSimpleName()`
+5. 取得反射操作类所在的包：`public Package getPackage()`
+6. 取得反射操作类的父类：`public Class<? super T> getSuperclass()`
+7. 反射操作的类是否是枚举：`public boolean isEnum()`
+8. 反射操作的类是否是接口：`public boolean isInterface()`
+9. 反射操作的类是否是数组：`public boolean isArray()`
+10. 反射实例化对象：`public T newInstance() throws InstantiationException,IllegalAccessException`
+
+**Class类中的newInstance()方法**可以利用反射实现**对象的实例化操作**,但是要求**类中必须有无参构造方法**：
+```java
+package com.lf.cn;
+class Book{
+	public Book(){
+		System.out.println("Book类的无参构造方法！");
+	}
+	@Override
+	public String toString(){
+		return "《Java实战经典》";
+	}
+}
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		Class <?> cls = Class.forName("com.lf.cn.Book");
+		Object obj = cls.newInstance();
+		Book bk = (Book) obj;
+		System.out.println(bk);
+	}
+}
+```
+
+* 使用**反射机制**实例化对象可以更好的**解耦合操作**，也可以**增加代码的复用性**，可以通过反射机制**配合一些配置文件**来**动态定义项目中所需要的类**。
+
+使用Class类中的newInstance()方法可以实现反射实例化对象的操作但是有无参构造的限制，当要利用**有参构造方法**时，就要使用**java.lang.reflect.Constructor类**。
+
+**Class类中取得类中的构造方法（返回Constructor对象）**的操作：
+1. 取得全部构造方法：`public Constructor<?> [] getConstructors() throws SecurityException`
+2. 取得指定参数类型的构造方法：`public Constructor<T> getConstructor(Class<?> ... parameterTypes) throws NoSuchMethodException,SecurityException`
+
+在**java.lang.reflect.Comstructor类**中常用的方法如下：
+1. 返回构造方法上所有抛出异常的类型：`public Class<?> [] getExceptionType()`
+2. 取得构造方法的修饰符：`public int getModifiers()`
+3. 取得构造方法的名字：`public String getName()`
+4. 取得构造方法中的参数个数：`public int getParameterCount()`
+5. 取得构造方法中的参数类型：`public Class<?> [] getParemeterTypes()`
+6. 调用指定参数的构造实例化对象：`public T newInstance(Object ... initargs) throws InstantiationException,IllegalAccessException,IllegalArgumentException,InvocationTargetException`
+
+**利用Constructor类明确调用类中的有参构造**：
+```java
+package com.lf.cn;
+
+import java.lang.reflect.Constructor;
+
+class Book{
+	private String title;
+	private double price;
+	public Book(String title,double price){
+		this.title = title;
+		this.price = price;
+	}
+	public String toString(){
+		return "图书名称：" + this.title + "\t图书价格：" + this.price;
+	}
+}
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		Class<?> cls = Class.forName("com.lf.cn.Book");
+		Constructor <?> c = cls.getConstructor(String.class,double.class);
+		Object obj = c.newInstance("Java开发",79.8);
+		System.out.println(obj);
+	}
+}
+```
+
+反射调用方法可以先**利用Class类取得操作类的方法对象**，常用方法如下：
+1. 取得类中的全部方法：`public Method[] getMethods() throws SecurityException`
+2. 取得类中指定方法名称与参数类型的方法：`public Method getMethod(String name,Class<?> ... paremeterTypes) throws NoSuchMethodException,SecurityException`
+
+在反射操作中，**每一个方法**都通过**java.lang.reflect.Method类表示**，Method类中的常用方法如下：
+1. 取得方法的修饰符：`public int getModifiers()`
+2. 取得方法的返回值类型：`public Class<?> getReturnType()`
+3. 取得方法中定义的参数数量：`public int getParameterCount()`
+4. 取得方法中定义的所有参数类型：`public Class<?> [] getParameterTypes()`
+5. 反射调用方法并传递执行方法所需要的参数数据：`public Object invoke(Object obj,Object ... args) throws IllegalAccessException,IllegalArgumentException,InvocationTargetException`
+6. 取得方法抛出的异常类型：`public Class<?> [] getExceptionTypes()`
+
+**利用Method类明确调用类中的方法**：
+```java
+package com.lf.cn;
+
+import java.lang.reflect.*;
+
+class Book{
+	private String title;
+	private double price;
+	public Book(String title,double price){
+		this.title = title;
+		this.price = price;
+	}
+	public void setTitle(String title){
+		this.title = title;
+	}
+	public String toString(){
+		return "图书名称：" + this.title + "\t图书价格：" + this.price;
+	}
+}
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		Class<?> cls = Class.forName("com.lf.cn.Book");
+		Constructor<?> con = cls.getConstructor(String.class,double.class);
+		Object obj = con.newInstance("Java开发",79.8);
+		System.out.println(obj);
+		Method setTitle = cls.getMethod("setTitle",String.class);
+		setTitle.invoke(obj,"Oracle开发");
+		System.out.println(obj);
+	}
+}
+```
+
+反射调用成员可以先利用Class类取得操作类的成员，常用方法如下：
