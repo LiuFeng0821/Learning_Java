@@ -255,7 +255,7 @@ public interface Comparator<T>{
 1. 编译正则表达式：`public static Pattern compile(String regex)`
 2. 数据全部拆分：`public String[] split(CharSequence input)`
 3. 数据部分拆分：`public String[] split(CharSequence input,int limit)`
-4. 取得Matcher类对象：`public String[] Matcher(CharSequence input)`
+4. 取得Matcher类对象：`public Matcher Matcher(CharSequence input)`
 
 **java.util.regex.Matcher类**主要功能是进行**数据的验证与替换**，常用方法如下：
 1. 正则匹配：`public boolean matches()`
@@ -308,7 +308,7 @@ public class TestDemo{
 
 使用Class类中的newInstance()方法可以实现反射实例化对象的操作但是有无参构造的限制，当要利用**有参构造方法**时，就要使用**java.lang.reflect.Constructor类**。
 
-**Class类中取得类中的构造方法（返回Constructor对象）**的操作：
+Class类中取得类中的构造方法（返回Constructor对象）的操作：
 1. 取得全部构造方法：`public Constructor<?> [] getConstructors() throws SecurityException`
 2. 取得指定参数类型的构造方法：`public Constructor<T> getConstructor(Class<?> ... parameterTypes) throws NoSuchMethodException,SecurityException`
 
