@@ -312,7 +312,7 @@ public class TestDemo{
 1. 取得全部构造方法：`public Constructor<?> [] getConstructors() throws SecurityException`
 2. 取得指定参数类型的构造方法：`public Constructor<T> getConstructor(Class<?> ... parameterTypes) throws NoSuchMethodException,SecurityException`
 
-在**java.lang.reflect.Comstructor类**中常用的方法如下：
+在**java.lang.reflect.Constructor类**中常用的方法如下：
 1. 返回构造方法上所有抛出异常的类型：`public Class<?> [] getExceptionType()`
 2. 取得构造方法的修饰符：`public int getModifiers()`
 3. 取得构造方法的名字：`public String getName()`
@@ -392,4 +392,49 @@ public class TestDemo{
 }
 ```
 
-反射调用成员可以先利用Class类取得操作类的成员，常用方法如下：
+反射调用成员可以先**利用Class类取得操作类的成员**，常用方法如下：
+1. 取得本类定义的全部成员：`public Field[] getDeclaredFields() throws SecurityException`
+2. 取得本类指定名称的成员：`public Field getDeclaredField(String name) throws NoSuchFieldException,SecurityException`
+3. 取得本类继承父类的全部成员：`public Field[] getFields() throws SecurityException`
+4. 取得本类继承父类中指定名称的成员：`public Field getField(String name) throws NoSuchFieldException,SecurityException`
+
+在反射操作中，**每一个成员**都通过**java.lang.reflect.Field类表示**，Field类中的常用方法如下：
+1. 取得该成员的类型：`public Class<?> getType()`
+2. 取得指定对象中的成员内容：`public Object get(Object obj) throws IllegalArgumentException,IllegalAccessException`
+3. 设置指定对象中的成员内容：`public Object set(OBject obj,Object value) throws IllegalArgumentException,IllegalAccessException`
+4. 解除私有属性的封装（true为解除）：`public void setAccessible(boolean flag) throws SecurityException`
+
+**利用Field类访问类中属性**：
+```java
+package com.lf.cn;
+
+import java.lang.reflect.*;
+
+class Book{
+	private String title;
+}
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		Class<?> cls = Class.forName("com.lf.cn.Book");
+		Object obj = cls.newInstance();
+		Field field = cls.getDeclaredField("title");
+		field.setAccessible(true);
+		field.set(obj,"Java开发");
+		System.out.println(field.get(obj));
+	}
+}
+```
+
+## 10.10 国际化
+可以使用**java.util.Locale类对用户使用的语言环境进行定义**，常用方法如下：
+1. 设置要使用的语言以及国家编码：`public Locale(String language,String country)`
+2. 取得当前语言环境下的Locale类对象：`public static Locale getDefault()`
+3. 中文语言环境：`public static final Locale CHINA`
+4. 英文语言环境：`public static final Locale ENGLISH`
+
+**资源文件**一般**以“key=value”的形式保存文本信息**，这样在信息读取的时候就可以**根据指定的key取得对应的value数据**，资源文件需要**以“.properties”作为文件后缀**，如果要在程序中读取资源文件，则需要使用**java.util.ResourceBundle类**完成，类中常用方法如下：
+1. 根据当前默认语言环境，取得资源对象（资源文件名称）：`public static final ResourceBundle getBundle(String baseName)`
+2. 根据指定的语言环境，取得资源对象：`public static final ResourceBundle getBundle(String baseName,Locale locale)`
+3. 根据key取得对应的value数据：`public final String getString(String key)`
+
+* **资源文件**必须**保存在CLASSPATH目录下**，资源文件可以存在包中，如果放进包中，**读取资源对象时应该加上包名称**。
