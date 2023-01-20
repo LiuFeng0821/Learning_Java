@@ -99,4 +99,68 @@ public class TestDemo{
 }
 ```
 
+**java.io.Writer类**可以**实现字符数组（包含字符串）的输出**，常用方法如下：
+1. 关闭字节输出流：`public void close() throws IOException`
+2. 强制刷新：`public void flush() throws IOException`
+3. 追加数据：`public Writer append(CharSequence csq) throws IOException`
+4. 输出字符串数据：`public void write(String str) throws IOException`
+5. 输出字符数组数据：`public void write(char[] cbuf) throws IOException`
+
+**java.io.FileWriter类**实现**Writer类对象的实例化**操作，常用方法如下：
+1. 设置输出文件：`public FileWriter(File file) throws IOException`
+2. 设置输出文件以及是否文件追加：`public FileWriter(File file,boolean append) throws IOException`
+
+**使用Writer类实现内容的输出**：
+```java 
+import java.io.File;
+import java.io.Writer;
+import java.io.FileWriter;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		File file = new File("D:" + File.separator + "demo" + File.separator + "mldn.txt");
+		Writer writer = new FileWriter(file);
+		if (!file.getParentFile().exists()){
+			file.getParentFile().mkdirs();
+		}
+		String str = "朱国针好美";
+		writer.write(str);
+		writer.close();
+	}
+}
+```
+
+**java.io.Reader类**可以**实现字符数据（包含字符串）的输入**操作，常用方法如下：
+1. 关闭字节输入流：`public void close() throws IOException`
+2. 读取单个数据：`public int read() throws IOException`
+3. 读取单个字符：`public int read() throws IOException`
+4. 读取数据到字符数组中，返回数组长度：`public int read(char[] cbuf) throws IOException`
+5. 跳过字节长度：`public long Skip(long n) throws IOException`
+
+**Reader类**是一个**抽象类**，要实现**文件数据的字符流读取**，可以利用**FileReader子类**为Reader类对象**实例化**，有关方法如下：
+1. 定义要读取的文件路径：`public FileReader(File file) throws FileNotFoundException`
+
+**使用Reader类实现数据的读取**：
+```java
+import java.io.File;
+import java.io.Reader;
+import java.io.FileReader;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		File file = new File("D:" + File.separator + "demo" + File.separator + "mldn.txt");
+		if (file.exists()){
+			Reader reader = new FileReader(file);
+			char data[] = new char[1024];
+			int len = reader.read(data);
+			reader.close();
+			System.out.println(new String(data,0,len));
+		}
+	}
+}
+```
+
+* **字节流直接与终端文件进行数据交互**，而**字符流需要将数据经过缓冲区处理才与终端文件进行数据交互**。在使用**OutputStream输出数据**即使**最后没有关闭输出流**，**内容可以正常输出**，但是如果使用**Writer输出数据**，如果最后**不关闭输出流**，则在**缓冲中的数据不会被强制性清空**，**不会输出数据**，如果有特殊情况不能关闭字符输出流，**可以使用flush()方法强制清空缓冲区**。
+
+* 虽然字节流与字符流表示两种不同的数据流操作，但是两种数据流之间可以实现互相转换，可以使用InputStreamReader以及OutputStreamWriter类来实现。
 
