@@ -167,3 +167,49 @@ public class TestDemo{
 ![InputStreamReader和OutputStreamWriter类的继承结构以及构造方法](image/11.3InputStreamReader%E5%92%8COutputStreamWriter%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF%E7%BB%93%E6%9E%84%E4%BB%A5%E5%8F%8A%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95.png)
 
 ## 11.4 案例：文件复制
+实现文件复制的操作：
+```java
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		if (args.length != 2){
+			System.out.println("命令执行错误！");
+			System.exit(1);
+		}
+		long start = System.currentTimeMillis();
+		File inFile = new File(args[0]);
+		if (!inFile.exists()){
+			System.out.println("源文件不存在，请确认执行路径。");
+			System.exit(1);
+		}
+		File outFile = new File(args[1]);
+		if (!outFile.getParentFile().exists()){
+			outFile.getParentFile().mkdirs();
+		}
+		InputStream input = new FileInputStream(inFile);
+		OutputStream output = new FileOutputStream(outFile);
+		int temp = 0;
+		byte data[] = new byte[1024];
+		while ((temp = input.read(data)) != -1){
+			output.write(data,0,temp);
+		}
+		input.close();
+		output.close();
+		long end = System.currentTimeMillis();
+		System.out.println("复制所花费时间：" + (end - start));
+	}
+}
+```
+
+## 11.5 字符编码
+* 可以利用System类中方法列出全部的系统属性：`System.getProperties().list(System.out);`
+
+## 11.6 内存流
+假设某一种应用需要进行IO操作，但是又不希望在磁盘上产生一些文件时，就可以将内存当作一个临时文件进行操作。在Java中，针对内存操作提供了以下两组类：
+
+![]
