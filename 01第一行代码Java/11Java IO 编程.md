@@ -291,3 +291,127 @@ public class TestDemo{
 ```
 
 ## 11.9 字符缓冲流：BufferedReader
+为了可以**完整地进行数据的输入操作**，最好的做法就是**采用缓冲区的方式对输入的数据进行暂存**，而后程序可以利用输入流一次性读取内容，如果要使用缓冲区进行数据操作，java.io包中提供了以下两种操作类：
+* **字符缓冲区流**：BufferedReader、BufferedWriter
+* **字节缓冲区流**：BufferedInputStream、BufferedOutputStream
+
+**BufferedReader类是Reader类的子类**，常用方法如下：
+1. 设置字符输入流（**构造方法接收Reader类对象**）：`public BufferedReader(Reader in)`
+2. **读取一行数据，默认以“\n”为分隔符**：`public String readLine() throws IOException`
+
+**键盘输入的标准格式**：
+```java
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		BufferedReader buf = new BufferedReader(new InputStreamReader(System.in));
+		System.out.print("请输入数据：");
+		String str = buf.readLine();
+		System.out.println("输入的数据：" + str);
+	}
+}
+```
+
+## 11.10 扫描流：Scanner
+**java.util.Scanner类**可以方便地**实现数据的输入操作**，有关操作方法如下：
+1. **接收InputStream输入流对象**：`public Scanner(InputStream source)`
+2. 判断是否有数据输入（**支持正则验证**）：`public boolean hasNext()`
+3. 取出输入数据，以String形式返回：`public String next()`
+4. 判断是否有指定类型数据存在：`public boolean haxNextXxx()`
+5. 取出指定数据类型的数据：`public 数据类型 nextXxx()`
+6. 设置读取的分隔符：`public Scanner useDelimiter(String pattern)`
+
+**利用Scanner实现键盘数据输入**：
+```java
+import java.util.Scanner;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("请输入内容:");
+		if (scanner.hasNext()){
+			System.out.println("输入内容为：" + scanner.next());
+		}
+		scanner.close();
+	}
+}
+```
+
+**利用Scanner实现文件内容的读取**：
+```java
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileInputStream;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		Scanner scanner = new Scanner(new FileInputStream(new File("D:" + File.separator + "yootk.txt")));
+		scanner.useDelimiter("\n");
+		while (scanner.hasNext()){
+			System.out.println(scanner.next());
+		}
+		scanner.close();
+	}
+}
+```
+
+## 11.11 对象序列化
+* **Java中允许用户在程序运行过程中进行对象的创建**，但是这些**创建的对象都只保存在内存中**，这些**对象的生命周期都不会超过JVM进程**。在很多时候**可能需要JVM进程结束后对象依然可以被保存下来**，或者**在不同的JVM之间进行传输**，在这种情况下，就可以**采用对象序列化的方式进行处理**。
+* **对象序列化**的本质就是**将内存中保存的对象数据转换为二进制数据流**进行传输操作，但并不是所有类都可以直接进行序列化操作，**要被序列化的对象所在的类要实现java.io.Serializable接口**，这是一个没有任何操作方法的**标识接口**。
+
+**实现了Serializable接口并不意味着可以实现序列化操作**，在对象序列化与反序列化的操作中，**还需要两个类的支持**：
+1. **序列化操作类**：`java.io.ObjectOutputStream`，将对象序列化为指定格式的二进制数据。
+2. **反序列化操作类**：`java.io.ObjectInputStream`，将序列化的二进制对象信息转换回对象内容。
+
+**java.io.ObjectOutputStream类**中常用方法：
+1. 指定对象序列化的输出流：`public ObjectOutputStream(OutputStream out) throws IOException`
+2. 序列化对象：`public final void writeObject(Object obj) throws IOException`
+
+**java.io.ObjectInputStream类**中常用方法：
+1. 指定对象反序列化的输入流：`public ObjectInputStream(InputStream in) throws IOException`
+2. 从输入流中读取对象：`public final Object readObject() throws IOException,ClassNotFoundException`
+
+实现序列化与反序列化对象操作：
+```java
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+
+class Book implements Serializable{
+	private String title;
+	private double price;
+	public Book(String title,double price){
+		this.title = title;
+		this.price = price;
+	}
+	public String toString(){
+		return "图书名称：" + this.title + "\t图书价格：" + this.price;
+	}
+}
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		ser();
+		dser();
+	}
+	public static void ser() throws Exception{
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("D:" + File.separator + "book.ser")));
+		oos.writeObject(new Book("Java开发",69.8));
+		oos.close();
+	}
+	public static void dser() throws Exception{
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("D:" + File.separator + "book.ser")));
+		Object obj = ois.readObject();
+		Book book = (Book) obj;
+		System.out.println(book);
+		ois.close();
+	}
+}
+```
+
+* Java中对象最有意义的内容就是对象的属性信息，所以在**默认情况下进行对象的序列化操作会将对象的所有属性信息全部序列化**，如果**某些属性在序列化的过程中不需要被保存**，可以使用**transient关键字**定义。
