@@ -162,12 +162,12 @@ public class TestDemo{
 
 * **字节流直接与终端文件进行数据交互**，而**字符流需要将数据经过缓冲区处理才与终端文件进行数据交互**。在使用**OutputStream输出数据**即使**最后没有关闭输出流**，**内容可以正常输出**，但是如果使用**Writer输出数据**，如果最后**不关闭输出流**，则在**缓冲中的数据不会被强制性清空**，**不会输出数据**，如果有特殊情况不能关闭字符输出流，**可以使用flush()方法强制清空缓冲区**。
 
-* 虽然字节流与字符流表示两种不同的数据流操作，但是两种数据流之间可以实现互相转换，可以使用InputStreamReader以及OutputStreamWriter类来实现。
+* 虽然**字节流与字符流**表示两种不同的数据流操作，但是**两种数据流之间可以实现互相转换**，可以使用**InputStreamReader**以及**OutputStreamWriter**类来实现。
 
 ![InputStreamReader和OutputStreamWriter类的继承结构以及构造方法](image/11.3InputStreamReader%E5%92%8COutputStreamWriter%E7%B1%BB%E7%9A%84%E7%BB%A7%E6%89%BF%E7%BB%93%E6%9E%84%E4%BB%A5%E5%8F%8A%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95.png)
 
 ## 11.4 案例：文件复制
-实现文件复制的操作：
+**实现文件复制的操作**：
 ```java
 import java.io.File;
 import java.io.InputStream;
@@ -207,9 +207,87 @@ public class TestDemo{
 ```
 
 ## 11.5 字符编码
-* 可以利用System类中方法列出全部的系统属性：`System.getProperties().list(System.out);`
+* 可以**利用System类中方法列出全部的系统属性**：`System.getProperties().list(System.out);`
 
 ## 11.6 内存流
-假设某一种应用需要进行IO操作，但是又不希望在磁盘上产生一些文件时，就可以将内存当作一个临时文件进行操作。在Java中，针对内存操作提供了以下两组类：
+假设某一种应用**需要进行IO操作**，但是又**不希望在磁盘上产生一些文件**时，就可以**将内存当作一个临时文件进行操作**。在Java中，针对内存操作提供了以下两组类：
+* **字节内存流**：**ByteArrayInputStream（内存字节输入流）**和**ByteArrayOutputStream（内存字节输出流）**
+* **字符内存流**：**CharArrayReader（内存字符输入流）**和**CharArrayWriter（内存字符输出流）**
 
-![]
+![内存流继承关系](image/11.6%E5%86%85%E5%AD%98%E6%B5%81%E7%BB%A7%E6%89%BF%E5%85%B3%E7%B3%BB.png)
+
+利用内存流实现大小写的转换：
+```java
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		String str = "Hello World!";
+		byte data[] = str.getBytes();
+		InputStream input = new ByteArrayInputStream(data);
+		OutputStream output = new ByteArrayOutputStream();
+		int temp = 0;
+		while ((temp = input.read()) != -1){
+			output.write(Character.toUpperCase(temp));
+		}
+		System.out.println(output);
+		input.close();
+		output.close();
+	}
+}
+```
+
+## 11.7 打印流
+为了**更方便地实现输出操作**，**java.io包**提供了两个**数据打印流的操作类**：**PrintStream（打印字节流）**、**PrintWriter（打印字符流）**。
+
+**PrintStream类的常用操作方法**：
+1. 通过已有的OutputStream确定输出目标：`public PrintStream(OutputStream out)`
+2. **输出各种常见数据类型**：`public void print(数据类型 参数名称)`
+3. **输出各种常见数据类型**，并追加一个换行：`public void println(数据类型 参数名称)`
+
+使用PrintStream类实现输出：
+```java
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		PrintStream pu = new PrintStream(new FileOutputStream(new File("D:" + File.separator + "yootk.txt")));
+		pu.println("Name:");
+		pu.println("Liu Feng");
+		pu.println(1 + 1);
+		pu.println(1.1 + 1.1);
+		pu.close();
+	}
+}
+```
+
+## 11.8 System类对IO的支持
+**System类中与IO有关的三个对象常量**：
+1. 显示器上错误输出：`public static final PrintStream err`
+2. 显示器上信息输出：`public static final PrintStream out`
+3. 键盘数据输入：`public static final InputStream in`
+
+* `System.out.println()`代码从本质上来说就是**调用了System类中的out常量**，由于此**常量类型为PrintStream**，所以可以**继续调用PrintStream类中的print()和println()方法**，由此可见，**Java的任何输出操作实际上都是IO操作**。
+* **System.err**是输出**不希望用户看见的异常**，而**System.out**是输出**希望用户看到的信息**。
+
+**实现键盘的数据输入**：
+```java
+import java.io.InputStream;
+
+public class TestDemo{
+	public static void main(String args[]) throws Exception{
+		InputStream input = System.in;
+		byte data[] = new byte[1024];
+		System.out.println("请输入数据：");
+		int len = input.read(data);
+		System.out.println("输入数据为：" + new String(data,0,len));
+	}
+}
+```
+
+## 11.9 字符缓冲流：BufferedReader
