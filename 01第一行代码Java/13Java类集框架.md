@@ -134,7 +134,7 @@ public class TestDemo{
 3. 将Map集合转换为Set集合：`public Set<Map.Entry<K,V>>entrySet()`
 4. 取出全部的key：`public Set<K> keySet()`
 
-* Map接口有两个常用的子类：HashMap和Hashtable
+* Map接口有两个常用的子类：**HashMap**和**Hashtable**。
 
 **HashMap子类的使用**：
 ```java
@@ -161,11 +161,133 @@ public class TestDemo{
 * 使用HashMap子类保存数据时**key或value可以保存为null**。
 * **Map**保存数据**主要**不是进行输出，而是**为了查找**。
 
-* **Hashtable类中key或者value不允许为null。**
+* **Hashtable类中key或者value不允许为null（会出现java.lang.NullPointerException）。**
 
-HashMap与Hashtable的区别：
+**HashMap与Hashtable的区别**：
 
 ![HashMap与Hashtable的区别](image/13.6HashMap%E4%B8%8EHashtable%E7%9A%84%E5%8C%BA%E5%88%AB.png)
 
+* 使用Collection集合保存数据时所有的对象都是直接保存的，而用**Map集合**保存数据时，所**保存的key和value会自动包装为Map.Entry接口对象**，如果利用**Iterator进行迭代**，那么**next()方法读取数据时返回的都是Map.Entry接口对象**，此接口定义为：`public static interface Map.Entry<K,V>{}`
 
+Map.Entry接口中常用的方法：
+1. 取得数据中的key：`public K getKey()`
+2. 取得数据中的value：`public V getValue()`
+3. 修改数据中的value：`public V setValue(V value)`
 
+利用Iterator实现Map接口的输出：
+```java
+import java.util.Map;
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.Iterator;
+
+public class TestDemo{
+	public static void main(String args[]){
+		Map<String,Integer> map = new Hashtable<String,Integer>();
+		map.put("壹",1);
+		map.put("贰",2);
+		map.put("叁",3);
+		map.put("叁",33);
+		Set<Map.Entry<String,Integer>> set = map.entrySet();
+		Iterator<Map.Entry<String,Integer>> iter = set.iterator();
+		while (iter.hasNext()){
+			Map.Entry<String,Integer> data = iter.next();
+			System.out.println(data.getKey() + "\t" + data.getValue());
+		}
+	}
+}
+```
+* **Map接口可以使用任意类型来充当key和value**，但是要注意，作为**key的自定义类**必须要**覆写hashCode()方法和equals()方法**，因为要依靠这两个方法**判断key元素是否重复**。
+
+## 13.7 Stack子类
+**栈**是一种**动态对象数组**，采用**先进后出**的数据结构形式，此类定义为：`public class Stack<E> extends Vector<E>`
+
+**java.util.Stack类**是Vector的子类，**Stack类常用方法如下**：
+1. 数据入栈：`public E push(E item)`
+2. 数据出栈，如果栈中没有数据，则调用此方法会抛出空栈异常（EmptyStackException）：`public E pop()`
+
+**观察栈的操作**：
+```java
+import java.util.Stack;
+
+public class TestDemo{
+	public static void main(String args[]){
+		Stack<String> all = new Stack<String>();
+		all.push("Hello");
+		all.push("Liu");
+		all.push("Feng");
+		System.out.println(all.pop());
+		System.out.println(all.pop());
+		System.out.println(all.pop());
+	}
+}
+```
+
+## 13.8 Properties子类
+**Properties类**本身属于**Hashtable的子类**，但是由于Properties类都使用String数据类型进行操作，所以Properties类主要使用本类所定义的方法：
+1. 设置属性：`public Object setProperty(String key,String value)`
+2. 取得属性，如果key不存在则返回null：`public String getProperty(String key)`
+3. 取得属性，如果key不存在则返回默认值：`public String getProperty(String key,String defaultValue)`
+4. 通过输出流保存属性内容，输出的同时可以设置注释信息：`public void store(OutputStream out,String comments) throws IOException`
+5. 通过输入流读取属性内容：`public void load(InputStream inStream) throws IOException`
+
+## 13.9 Collections工具类
+**java.util.Collections类**提供了很多**操作List、Set、Map集合的方法**，常用方法如下：
+1. 实现集合数据追加：`public static <T> boolean addAll(Collection<? super T> c,T ... elements)`
+2. 使用二分查找法查找集合数据：`public static <T> int binarySearch(List<? extends Comparable<? super T>> list,T key)`
+3. 集合复制：`public static <T> void copy(List<? super T> dest,List<? extends T> src)`
+4. 集合反转：`public static void reverse(List<?> list)`
+5. 集合排序：`public static <T extends Comparable<? super T>> void sort(List<T> list)`
+
+## 13.10 数据流
+* 在Iterable接口中提供了一个实现集合输出的方法：`default void forEach(Consumer<? super T> action)`
+
+利用forEach()方法输出：
+```java
+import java.util.List;
+import java.util.ArrayList;
+
+public class TestDemo{
+	public static void main(String args[]){
+		List<String> all = new ArrayList<String>();
+		all.add("Hello");
+		all.add("Liu");
+		all.add("Feng");
+		all.forEach(System.out :: println);
+	}
+}
+```
+
+在**JDK 1.8中为了简化集合数据处理的操作**，专门提供了一个**数据流操作接口**：**java.util.stream.Stream**，这个类可以**利用Collection接口中提供的default型方法实现Stream接口的实例化操作**：`default Stream<E> stream()`，Stream类中常用方法如下：
+1. 返回元素个数：`public long count()`
+2. 消除重复元素：`public Stream<T> distinct()`
+3. 利用收集器接收处理后的数据：`public <R,A> R collect(Collector<? super T,A,R> collector)`
+4. 数据过滤（设置断言型函数式接口）：`public Stream<T> filter(Predicate<? super T> predicate)`
+5. 数据处理操作：`pubilc <R> Stream<R> map(Function<? super T,? extends R> mapper)`
+6. 设置跳过的数据行数：`public Stream<T> skip(long n)`
+7. 设置取出的数据个数：`public Stream<T> limit(long maxSize)`
+8. 数据查询，要求全部匹配：`public boolean allMatch(Predicate<? super T> predicate)`
+9. 数据查询，匹配任意一个：`public boolean anyMatch(Predicate<? super T> predicate)`
+10. 或操作：`default Predicate<T> or(Predicate<? super T> other)`
+11. 与操作：`default Predicate<T> and(Predicate<? super T> other)`
+
+取消集合中的重复元素：
+```java
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.List;
+import java.util.ArrayList;
+
+public class TestDemo{
+	public static void main(String args[]){
+		List<String> all = new ArrayList<String>();
+		all.add("Hello");
+		all.add("Hello");
+		all.add("LiuFeng");
+		all.add("World");
+		Stream<String> stream = all.stream();
+		List<String> newAll = stream.distinct().collect(Collectors.toList());
+		newAll.forEach(System.out :: println);
+	}
+}
+```
